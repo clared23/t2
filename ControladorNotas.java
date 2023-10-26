@@ -8,27 +8,27 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import modelos.Alumnos;
 import modelos.Notas;
-import servicios.ServicioAlumnos;
-import servicios.ServicioNotas;
+import servicios.ServicioProductos;
+import servicios.ServicioProductos;
 
 import java.io.IOException;
 import java.util.List;
 
 /**
- * Servlet implementation class ControladorNotas
+ * Servlet implementation class ControladorProductos
  */
 public class ControladorNotas extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
-	private ServicioNotas servicioNotas;
-	private ServicioAlumnos servicioAlumnos;
+	private ServicioNotas serviciolista;
+	private ServicioAlumnos servicioProductos;
 
     public void init() throws ServletException {
         super.init();
 
         try {
-            servicioNotas = new ServicioNotas();
-            servicioAlumnos = new ServicioAlumnos();
+            servicioNotas = new Serviciolista();
+            servicioAlumnos = new ServicioProductos();
         } catch (Exception e) {
             throw new ServletException(e);
         }
@@ -41,10 +41,10 @@ public class ControladorNotas extends HttpServlet {
 	    }
 	    switch (elComando) {
         case "listar":
-            obtenerNotas(request, response);
+            obtenerLista(request, response);
             break;
         case "insertarBBDD":
-            agregarNotas(request, response);
+            agregarLista(request, response);
             break;
 		case "cargar":
 			try {
@@ -55,44 +55,44 @@ public class ControladorNotas extends HttpServlet {
 			break;
 		case "actualizarBBDD":
 			try {
-				actualizaNotas(request,response);
+				actualizaLista(request,response);
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
 			break;
 		case "eliminar":
 			try {
-				eliminaNotas(request,response);
+				eliminaLista(request,response);
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
         default:
-            obtenerNotas(request, response);
+            obtenerLista(request, response);
 	    }
 	}
 	private void eliminaNotas(HttpServletRequest request, HttpServletResponse response) throws Exception{
 		// CAPTURAR EL CODIGO ARTÍCULO
 		String IDNota=request.getParameter("CNota");
 		//BORRAR PRODUCTO DE LA BD
-		servicioNotas.eliminarNota(IDNota);
+		servicioNotas.eliminarLista(IDLista);
 		// VOLVER AL LISTADO DE PRODUCTOS
-		obtenerNotas(request,response);
+		obteneLista(request,response);
 	}
 	private void actualizaNotas(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// LEER LA INFORMACION DEL PRODUCTO QUE VIENE DEL FORMULARIO
-		int IdNota = Integer.parseInt(request.getParameter("idNota"));
-		int IdAlumno = Integer.parseInt(request.getParameter("idAlumno"));
+		int IdNota = Integer.parseInt(request.getParameter("idProducto"));
+		int IdAlumno = Integer.parseInt(request.getParameter("idProducto"));
 		String Registro = request.getParameter("registro");
-		double Nota = Double.parseDouble(request.getParameter("nota"));
+		double Nota = Double.parseDouble(request.getParameter("Lista"));
 		
 		//CREAR UN OBJETO DE TIPO PRODUCTO
 		Notas NotaActualizada = new Notas(IdNota, IdAlumno, Registro, Nota);
 		
 		//ACTUALIZAR LA BD CON LA INFO DEL ONJ PRODUCTO
-		servicioNotas.actualizarNota(NotaActualizada);
+		servicioNotas.actualizarLista(ListaActualizada);
 		
 		//VOLVER AL LISTADO DE PRODUCTOS
-		obtenerNotas(request,response);
+		obtenerLista(request,response);
 	}
 	private void cargaProductos(HttpServletRequest request, HttpServletResponse response) throws Exception{
 		//LEER EL CÓDIGO DEL ARTÍCULO QUE VIENE DEL LISTADO
@@ -135,5 +135,31 @@ public class ControladorNotas extends HttpServlet {
             e.printStackTrace();
         }
 	}
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Carrito de Compras</title>
+</head>
+<body>
+    <h1>Carrito de Compras</h1>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Precio</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="product : ${products}">
+                <td th:text="${product.name}"></td>
+                <td th:text="${product.price}"></td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <p>Total: $<span th:text="${total}"></span></p>
+</body>
+</html>
 
 }
